@@ -1,6 +1,5 @@
 import multiprocessing as mp
 import numpy as np
-import math
 
 
 def match_non_parallel(source: np.ndarray, template: np.ndarray, method="ssd", start_row=None, end_row=None) -> tuple:
@@ -10,6 +9,12 @@ def match_non_parallel(source: np.ndarray, template: np.ndarray, method="ssd", s
 
     # SSD -> Lower score, better match; CC -> Higher score, better match
     assert method in ["ssd", "cc"], "Invalid method"
+
+    # Make sure template is smaller than source
+    assert source_height >= template_height and source_width >= template_width, "Template is bigger than source"
+
+    # Match map
+    match_map = np.zeros((source_height - template_height + 1, source_width - template_width + 1))
 
     # Start and end rows and cols for processing
     start_row = start_row or 0
@@ -28,16 +33,19 @@ def match_non_parallel(source: np.ndarray, template: np.ndarray, method="ssd", s
             # Calculate score based on selected method
             current_score = calculate_score(region, template, method)
 
+            # Add score to match map
+            match_map[y, x] = current_score
+
             # Update best match
-            if current_score < min_score:
+            if current_score <= min_score:
                 min_score = current_score
                 min_coords = (x, y)
 
-            if current_score > max_score:
+            if current_score >= max_score:
                 max_score = current_score
                 max_coords = (x, y)
 
-    return min_score, max_score, min_coords, max_coords
+    return min_score, max_score, min_coords, max_coords, match_map
 
 
 def match_parallel(source: np.ndarray, template: np.ndarray, process_count=4, method="ssd") -> tuple:
@@ -48,14 +56,18 @@ def match_parallel(source: np.ndarray, template: np.ndarray, process_count=4, me
     # SSD -> Lower score, better match; CC -> Higher score, better match
     assert method in ["ssd", "cc"], "Invalid method"
 
+    # Make sure template is smaller than source
+    assert source_height >= template_height and source_width >= template_width, "Template is bigger than source"
+
     # Initialize max/min score and match coordinates
     min_score, max_score = np.inf, -np.inf
     min_coords, max_coords = (0, 0), (0, 0)
 
-    # Multiprocessing
-    possible_rows = math.ceil(source_height / template_height)
-    process_count = min(process_count, possible_rows)
-    rows_per_process = source_height // process_count
+    # Multiprocessing -- Adjust number of processes if it's bigger than number of available CPUs
+    process_count = min(process_count, mp.cpu_count())
+
+    # Calculate the number of rows each process will check
+    rows_per_process = (source_height - template_height + 1) // process_count
 
     # Get the start and end rows for each process
     indexes = []
@@ -74,6 +86,8 @@ def match_parallel(source: np.ndarray, template: np.ndarray, process_count=4, me
         results = pool.starmap(match_non_parallel, [(source, template, method, index[0], index[1]) for index in indexes])
 
     # Extract the results from the pool
+    match_map = np.zeros((source_height - template_height + 1, source_width - template_width + 1))
+
     for result in results:
         if result[0] < min_score:
             min_score = result[0]
@@ -83,13 +97,26 @@ def match_parallel(source: np.ndarray, template: np.ndarray, process_count=4, me
             max_score = result[1]
             max_coords = result[3]
 
-    return min_score, max_score, min_coords, max_coords
+        # Blend match map
+        match_map += result[4]
+
+    return min_score, max_score, min_coords, max_coords, match_map
 
 
 def calculate_score(region, template, method):
     if method == "ssd":
-        return np.sum((region - template) ** 2)
+        # Normalize SSD
+        std_region = np.std(region)
+        std_template = np.std(template)
+        normalized_ssd = np.sum((region - template) ** 2) / (std_region * std_template)
+        return normalized_ssd
     elif method == "cc":
-        return np.sum(region * template)
+        # Normalize CC
+        std_region = np.std(region)
+        std_template = np.std(template)
+        cc = np.sum(region * template)
+        num_pixels_template = np.prod(template.shape)
+        normalized_cc = cc / (std_region * std_template * num_pixels_template)
+        return normalized_cc
     else:
         raise ValueError("Invalid method")
