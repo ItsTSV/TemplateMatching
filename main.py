@@ -19,7 +19,7 @@ if __name__ == "__main__":
     assert match_map_linear.all() == match_map_parallel_4.all() == match_map_parallel_8.all() == match_map_parallel_16.all(), "Results are not the same"
 
     # Extract results
-    matches, count = extract_matches(match_map_linear, 0.001)
+    matches, count = extract_matches(match_map_linear, 0.05)
 
     # Draw results
     color_pacman = cv.cvtColor(source_pacman, cv.COLOR_GRAY2BGR)
