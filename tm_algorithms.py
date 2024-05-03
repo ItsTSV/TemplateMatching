@@ -13,7 +13,7 @@ def match_non_parallel(source: np.ndarray, template: np.ndarray, start_row=None,
     # Match map
     match_map = np.ones_like(source, dtype=np.float32)
 
-    # Start and end rows and cols for processing
+    # Start and end rows for processing
     start_row = start_row or 0
     end_row = end_row or source_height - template_height + 1
 
@@ -23,7 +23,7 @@ def match_non_parallel(source: np.ndarray, template: np.ndarray, start_row=None,
             # Get region (sliding window) of source image
             region = source[y:y + template_height, x:x + template_width]
 
-            # Calculate score based on selected method
+            # Calculate score (SSD)
             current_score = calculate_score(region, template)
 
             # Add score to match map
