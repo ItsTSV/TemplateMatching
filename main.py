@@ -1,8 +1,7 @@
 import cv2 as cv
 from benchmark import *
 from tm_algorithms import *
-import time
-import multiprocessing as mp
+from tm_algorithms_numba import *
 
 if __name__ == "__main__":
     # Test 1 -- Atari Pacman
@@ -14,9 +13,14 @@ if __name__ == "__main__":
     match_map_parallel_4 = match_parallel(source_img_1, template_img_1, 4)
     match_map_parallel_8 = match_parallel(source_img_1, template_img_1, 8)
     match_map_parallel_16 = match_parallel(source_img_1, template_img_1, 16)
+    time_s = time.time()
+    match_map_numba = match_numba_parallel(source_img_1, template_img_1)
+    time_e = time.time()
+    print(f"Time for Numba: {time_e - time_s}")
 
     # Check if results are the same using a.all
-    assert match_map_linear.all() == match_map_parallel_4.all() == match_map_parallel_8.all() == match_map_parallel_16.all(), "Results are not the same"
+    assert (match_map_linear.all() == match_map_parallel_4.all() == match_map_parallel_8.all() ==
+            match_map_parallel_16.all() == match_map_numba.all()), "Results are not the same"
 
     # Extract results
     matches, count = extract_matches(match_map_linear, 0.05)
