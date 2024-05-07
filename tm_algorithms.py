@@ -2,7 +2,7 @@ import multiprocessing as mp
 import numpy as np
 
 
-def match_non_parallel(source: np.ndarray, template: np.ndarray, start_row=None, end_row=None):
+def match_non_parallel(source: np.ndarray, template: np.ndarray, start_y=None, end_y=None):
     # Get dimensions of source and template
     source_height, source_width = source.shape
     template_height, template_width = template.shape
@@ -14,11 +14,11 @@ def match_non_parallel(source: np.ndarray, template: np.ndarray, start_row=None,
     match_map = np.ones_like(source, dtype=np.float32)
 
     # Start and end rows for processing
-    start_row = start_row or 0
-    end_row = end_row or source_height - template_height + 1
+    start_y = start_y or 0
+    end_y = end_y or source_height - template_height + 1
 
     # Go through source image
-    for y in range(start_row, end_row):
+    for y in range(start_y, end_y):
         for x in range(source_width - template_width + 1):
             # Get region (sliding window) of source image
             region = source[y:y + template_height, x:x + template_width]
