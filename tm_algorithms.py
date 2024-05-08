@@ -85,12 +85,14 @@ def extract_matches(match_map, threshold):
 
 
 def calculate_score(region, template):
-    # Calculate the SSD using numpy
+    # Normalize images
+    region = region.astype(np.float32) / 255.0
+    template = template.astype(np.float32) / 255.0
+
+    # Calculate SSD
     squared_difference = np.square(region - template)
     ssd = np.sum(squared_difference)
 
-    # Normalize the SSD
+    # Normalize result
     normalized_factor = np.prod(template.shape)
-    normalized_ssd = ssd / normalized_factor
-
-    return normalized_ssd
+    return ssd / normalized_factor
