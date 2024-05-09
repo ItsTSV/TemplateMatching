@@ -18,14 +18,14 @@ def match_numba_parallel(source: np.ndarray, template: np.ndarray, start_row=Non
     start_row = start_row or 0
     end_row = end_row or source_height - template_height + 1
 
-    parallel_inner_loop(source, template, match_map, start_row, end_row)
+    parallel_outer_loop(source, template, match_map, start_row, end_row)
 
     return match_map
 
 
 # Running with nopython and parallel flag; but only the outer loop can be parallelized effectively
 @numba.jit(nopython=True, parallel=True)
-def parallel_inner_loop(source, template, match_map, start_row, end_row):
+def parallel_outer_loop(source, template, match_map, start_row, end_row):
     source_height, source_width = source.shape
     template_height, template_width = template.shape
 
