@@ -1,0 +1,34 @@
+Space Invaders (threshold=0.01):
+    - Non-parallel: 7.806 seconds
+    - Parallel 2: 4.437 seconds
+    - Parallel 4: 2.585 seconds
+    - Parallel 8: 1.797 seconds
+    - Parallel Numba: 2.710 seconds
+
+Pacman (threshold=0.01):
+    - Non-parallel: 5.662 seconds
+    - Parallel 2: 3.343 seconds
+    - Parallel 4: 1.987 seconds
+    - Parallel 8: 1.456 seconds
+    - Parallel Numba: 1.064 seconds
+
+Superflat City (threshold=0.055):
+    - Non-parallel: 13.463 seconds
+    - Parallel 2: 7.423 seconds
+    - Parallel 4: 4.136 seconds
+    - Parallel 8: 2.740 seconds
+    - Parallel Numba: 1.102 seconds
+
+Starry Night (threshold=0.0375):
+    - Non-parallel: 22.110 seconds
+    - Parallel 2: 11.878 seconds
+    - Parallel 4: 6.675 seconds
+    - Parallel 8: 4.290 seconds
+    - Parallel Numba: 9.137 seconds
+
+Nighthawks (threshold=0.035):
+    - Non-parallel: 182.052 seconds
+    - Parallel 2: 93.096 seconds
+    - Parallel 4: 52.556 seconds
+    - Parallel 8: 33.223 seconds
+    - Parallel Numba: 67.815 seconds

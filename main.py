@@ -10,7 +10,7 @@ if __name__ == "__main__":
     template_img = cv.imread(template_address, cv.IMREAD_GRAYSCALE)
 
     # Prepare benchmark parameters
-    iterations = 1
+    iterations = 10
     threshold = 0.01
 
     # Run benchmarks
@@ -52,4 +52,5 @@ if __name__ == "__main__":
         cv.rectangle(color_source, (x, y), (x + template_img.shape[1], y + template_img.shape[0]), (0, 255, 0), 2)
 
     cv.imshow("Matches", color_source)
+    cv.imwrite("Results/MatchesResult.png", color_source)
     cv.waitKey(0)
