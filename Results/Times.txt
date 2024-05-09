@@ -26,7 +26,7 @@ Starry Night (threshold=0.0375):
     - Parallel 8: 4.290 seconds
     - Parallel Numba: 9.137 seconds
 
-Nighthawks (threshold=0.035):
+Nighthawks (threshold=0.025):
     - Non-parallel: 182.052 seconds
     - Parallel 2: 93.096 seconds
     - Parallel 4: 52.556 seconds
