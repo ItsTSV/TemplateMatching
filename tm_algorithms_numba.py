@@ -36,6 +36,7 @@ def parallel_outer_loop(source, template, match_map, start_row, end_row):
             match_map[y, x] = current_score
 
 
+# Heavily numeric code, Numba jit is used
 @numba.jit(nopython=True)
 def calculate_score(region, template):
     # Normalize images
